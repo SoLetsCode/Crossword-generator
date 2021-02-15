@@ -50,7 +50,9 @@ const ROWS = 15;
 const COLUMNS = 15;
 
 function Grid() {
-  const [wordList, setWordList] = useState(defaultWordList);
+  const [wordList, setWordList] = useState(
+    defaultWordList.map((word) => word.toUpperCase())
+  );
   const [grid, setGrid] = useState(null);
 
   useEffect(() => {
@@ -103,7 +105,6 @@ function Grid() {
 
     let tempWordList = [...wordList];
     putWordInGrid(tempWordList[0]);
-    let tempWord = tempWordList.pop();
   };
 
   const putWordInGrid = (word) => {
@@ -119,25 +120,6 @@ function Grid() {
     if (checkIfWordFits(tempGrid, tempDirection, wordList[0], x, y)) {
       checkIfWordFits(tempGrid, tempDirection, wordList[0], x, y, true);
     }
-    switch (tempDirection) {
-      case "N":
-        break;
-      case "E":
-        break;
-      case "S":
-        break;
-      case "W":
-        break;
-      case "NE":
-        break;
-      case "NW":
-        break;
-      case "SE":
-        break;
-      case "SW":
-        break;
-      default:
-    }
 
     setGrid(tempGrid);
   };
@@ -152,13 +134,16 @@ function Grid() {
         if (y - word.length < 0) {
           return false;
         }
-        for (let row = 0; row < word.length; row++) {
-          if (myGrid[y - row][x] !== 0 && myGrid[y - row][x] !== word[row]) {
+        for (let count = 0; count < word.length; count++) {
+          if (
+            myGrid[y - count][x] !== 0 &&
+            myGrid[y - count][x] !== word[count]
+          ) {
             result = false;
           }
 
           if (write) {
-            myGrid[y - row][x] = word[row];
+            myGrid[y - count][x] = word[count];
           }
         }
         break;
@@ -166,12 +151,15 @@ function Grid() {
         if (x + word.length >= COLUMNS) {
           return false;
         }
-        for (let col = 0; col < word.length; col++) {
-          if (myGrid[y][x + col] !== 0 && myGrid[y][x + col] !== word[col]) {
+        for (let count = 0; count < word.length; count++) {
+          if (
+            myGrid[y][x + count] !== 0 &&
+            myGrid[y][x + count] !== word[count]
+          ) {
             result = false;
           }
           if (write) {
-            myGrid[y][x + col] = word[col];
+            myGrid[y][x + count] = word[count];
           }
         }
         break;
@@ -179,13 +167,16 @@ function Grid() {
         if (y + word.length >= ROWS) {
           return false;
         }
-        for (let row = 0; row < word.length; row++) {
-          if (myGrid[y + row][x] !== 0 && myGrid[y + row][x] !== word[row]) {
+        for (let count = 0; count < word.length; count++) {
+          if (
+            myGrid[y + count][x] !== 0 &&
+            myGrid[y + count][x] !== word[count]
+          ) {
             result = false;
           }
 
           if (write) {
-            myGrid[y + row][x] = word[row];
+            myGrid[y + count][x] = word[count];
           }
         }
         break;
@@ -193,12 +184,15 @@ function Grid() {
         if (x - word.length < 0) {
           return false;
         }
-        for (let col = 0; col < word.length; col++) {
-          if (myGrid[y][x - col] !== 0 && myGrid[y][x - col] !== word[col]) {
+        for (let count = 0; count < word.length; count++) {
+          if (
+            myGrid[y][x - count] !== 0 &&
+            myGrid[y][x - count] !== word[count]
+          ) {
             result = false;
           }
           if (write) {
-            myGrid[y][x - col] = word[col];
+            myGrid[y][x - count] = word[count];
           }
         }
         break;
@@ -206,17 +200,15 @@ function Grid() {
         if (y - word.length < 0 || x + word.length >= COLUMNS) {
           return false;
         }
-        for (let row = 0; row < word.length; row++) {
-          for (let col = 0; col < word.length; col++) {
-            if (
-              myGrid[y - row][x + col] !== 0 &&
-              myGrid[y - row][x + col] !== word[col]
-            ) {
-              result = false;
-            }
-            if (write) {
-              myGrid[y - row][x + col] = word[row];
-            }
+        for (let count = 0; count < word.length; count++) {
+          if (
+            myGrid[y - count][x + count] !== 0 &&
+            myGrid[y - count][x + count] !== word[count]
+          ) {
+            result = false;
+          }
+          if (write) {
+            myGrid[y - count][x + count] = word[count];
           }
         }
         break;
@@ -224,17 +216,15 @@ function Grid() {
         if (y - word.length < 0 || x - word.length < 0) {
           return false;
         }
-        for (let row = 0; row < word.length; row++) {
-          for (let col = 0; col < word.length; col++) {
-            if (
-              myGrid[y - row][x - col] !== 0 &&
-              myGrid[y - row][x - col] !== word[col]
-            ) {
-              result = false;
-            }
-            if (write) {
-              myGrid[y - row][x - col] = word[row];
-            }
+        for (let count = 0; count < word.length; count++) {
+          if (
+            myGrid[y - count][x - count] !== 0 &&
+            myGrid[y - count][x - count] !== word[count]
+          ) {
+            result = false;
+          }
+          if (write) {
+            myGrid[y - count][x - count] = word[count];
           }
         }
         break;
@@ -242,17 +232,15 @@ function Grid() {
         if (y + word.length >= ROWS || x + word.length >= COLUMNS) {
           return false;
         }
-        for (let row = 0; row < word.length; row++) {
-          for (let col = 0; col < word.length; col++) {
-            if (
-              myGrid[y + row][x + col] !== 0 &&
-              myGrid[y + row][x + col] !== word[col]
-            ) {
-              result = false;
-            }
-            if (write) {
-              myGrid[y + row][x + col] = word[row];
-            }
+        for (let count = 0; count < word.length; count++) {
+          if (
+            myGrid[y + count][x + count] !== 0 &&
+            myGrid[y + count][x + count] !== word[count]
+          ) {
+            result = false;
+          }
+          if (write) {
+            myGrid[y + count][x + count] = word[count];
           }
         }
         break;
@@ -260,19 +248,18 @@ function Grid() {
         if (y + word.length >= ROWS || x - word.length < 0) {
           return false;
         }
-        for (let row = 0; row < word.length; row++) {
-          for (let col = 0; col < word.length; col++) {
-            if (
-              myGrid[y + row][x - col] !== 0 &&
-              myGrid[y + row][x - col] !== word[col]
-            ) {
-              result = false;
-            }
-            if (write) {
-              myGrid[y + row][x - col] = word[row];
-            }
+        for (let count = 0; count < word.length; count++) {
+          if (
+            myGrid[y + count][x - count] !== 0 &&
+            myGrid[y + count][x - count] !== word[count]
+          ) {
+            result = false;
+          }
+          if (write) {
+            myGrid[y + count][x - count] = word[count];
           }
         }
+
         break;
       default:
     }
