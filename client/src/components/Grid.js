@@ -102,15 +102,23 @@ function Grid() {
     }
 
     let tempWordList = [...wordList];
-    putWordInGrid();
+    putWordInGrid(tempWordList[0]);
     let tempWord = tempWordList.pop();
   };
 
   const putWordInGrid = (word) => {
     let directions = [...DIRECTIONS];
-    let tempPosition = generateRandomPos();
+    let { x, y } = generateRandomPos();
     let tempDirection = generateRandomDirection(directions);
-    debugger;
+    let tempGrid = copyGrid(grid);
+    console.log(`x is ${x}`);
+    console.log(`y is ${y}`);
+    console.log(tempDirection);
+    setGrid(tempGrid);
+    console.log(checkIfWordFits(tempGrid, tempDirection, wordList[0], x, y));
+    if (checkIfWordFits(tempGrid, tempDirection, wordList[0], x, y)) {
+      checkIfWordFits(tempGrid, tempDirection, wordList[0], x, y, true);
+    }
     switch (tempDirection) {
       case "N":
         break;
@@ -130,16 +138,159 @@ function Grid() {
         break;
       default:
     }
+
+    setGrid(tempGrid);
   };
 
-  const generateRandomPos = async () => {
+  const checkIfWordFits = (tempGrid, direction, word, x, y, write = false) => {
+    //checks if word fits and works in grid. returns false if it doesn't work.
+    //if in write mode (boolean) then write the word into grid and return grid
+    let result = true;
+    let myGrid = copyGrid(tempGrid);
+    switch (direction) {
+      case "N":
+        if (y - word.length < 0) {
+          return false;
+        }
+        for (let row = 0; row < word.length; row++) {
+          if (myGrid[y - row][x] !== 0 && myGrid[y - row][x] !== word[row]) {
+            result = false;
+          }
+
+          if (write) {
+            myGrid[y - row][x] = word[row];
+          }
+        }
+        break;
+      case "E":
+        if (x + word.length >= COLUMNS) {
+          return false;
+        }
+        for (let col = 0; col < word.length; col++) {
+          if (myGrid[y][x + col] !== 0 && myGrid[y][x + col] !== word[col]) {
+            result = false;
+          }
+          if (write) {
+            myGrid[y][x + col] = word[col];
+          }
+        }
+        break;
+      case "S":
+        if (y + word.length >= ROWS) {
+          return false;
+        }
+        for (let row = 0; row < word.length; row++) {
+          if (myGrid[y + row][x] !== 0 && myGrid[y + row][x] !== word[row]) {
+            result = false;
+          }
+
+          if (write) {
+            myGrid[y + row][x] = word[row];
+          }
+        }
+        break;
+      case "W":
+        if (x - word.length < 0) {
+          return false;
+        }
+        for (let col = 0; col < word.length; col++) {
+          if (myGrid[y][x - col] !== 0 && myGrid[y][x - col] !== word[col]) {
+            result = false;
+          }
+          if (write) {
+            myGrid[y][x - col] = word[col];
+          }
+        }
+        break;
+      case "NE":
+        if (y - word.length < 0 || x + word.length >= COLUMNS) {
+          return false;
+        }
+        for (let row = 0; row < word.length; row++) {
+          for (let col = 0; col < word.length; col++) {
+            if (
+              myGrid[y - row][x + col] !== 0 &&
+              myGrid[y - row][x + col] !== word[col]
+            ) {
+              result = false;
+            }
+            if (write) {
+              myGrid[y - row][x + col] = word[row];
+            }
+          }
+        }
+        break;
+      case "NW":
+        if (y - word.length < 0 || x - word.length < 0) {
+          return false;
+        }
+        for (let row = 0; row < word.length; row++) {
+          for (let col = 0; col < word.length; col++) {
+            if (
+              myGrid[y - row][x - col] !== 0 &&
+              myGrid[y - row][x - col] !== word[col]
+            ) {
+              result = false;
+            }
+            if (write) {
+              myGrid[y - row][x - col] = word[row];
+            }
+          }
+        }
+        break;
+      case "SE":
+        if (y + word.length >= ROWS || x + word.length >= COLUMNS) {
+          return false;
+        }
+        for (let row = 0; row < word.length; row++) {
+          for (let col = 0; col < word.length; col++) {
+            if (
+              myGrid[y + row][x + col] !== 0 &&
+              myGrid[y + row][x + col] !== word[col]
+            ) {
+              result = false;
+            }
+            if (write) {
+              myGrid[y + row][x + col] = word[row];
+            }
+          }
+        }
+        break;
+      case "SW":
+        if (y + word.length >= ROWS || x - word.length < 0) {
+          return false;
+        }
+        for (let row = 0; row < word.length; row++) {
+          for (let col = 0; col < word.length; col++) {
+            if (
+              myGrid[y + row][x - col] !== 0 &&
+              myGrid[y + row][x - col] !== word[col]
+            ) {
+              result = false;
+            }
+            if (write) {
+              myGrid[y + row][x - col] = word[row];
+            }
+          }
+        }
+        break;
+      default:
+    }
+    if (!write) {
+      return result;
+    } else {
+      console.table(myGrid);
+      return myGrid;
+    }
+  };
+
+  const generateRandomPos = () => {
     let x, y;
     let attempts = 0;
     do {
-      x = generateRandomNum(ROWS);
-      y = generateRandomNum(COLUMNS);
+      x = generateRandomNum(COLUMNS);
+      y = generateRandomNum(ROWS);
       attempts++;
-      console.log(attempts);
     } while (grid[x][y] !== 0 && attempts <= ROWS * COLUMNS);
 
     if (attempts >= ROWS * COLUMNS) {
@@ -167,7 +318,8 @@ function Grid() {
     }
     return tempGrid;
   };
-  //create react components
+
+  //react component creators
   const createWordList = () => {
     return wordList.map((word) => <div>{word}</div>);
   };
