@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import { Button, Container, Col, Row } from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Input, Form, FormGroup, Label, FormText } from "reactstrap";
 
 const defaultWordList = [
   "pigeon",
@@ -51,12 +53,16 @@ const DIRECTIONS = ["N", "E", "S", "W", "NE", "NW", "SE", "SW"];
 const ROWS = 15;
 const COLUMNS = 15;
 
+const API_PATH = "http://api.datamuse.com/words";
+
 function Grid() {
   const [wordList, setWordList] = useState(
     defaultWordList.map((word) => word.toUpperCase())
   );
   const [grid, setGrid] = useState(null);
   const [solutionGrid, setSolutionGrid] = useState([[]]);
+  const [modal, setModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     generateGrid();
@@ -82,6 +88,33 @@ function Grid() {
     generateGrid();
   };
 
+  const formSubmit = async (e) => {
+    e.preventDefault();
+    let maxWords = e.target.maxWords.value || 10;
+    let theme = e.target.theme.value;
+    let minLength = parseInt(e.target.minLength.value);
+    setLoading(!loading);
+
+    fetch(`${API_PATH}?ml=${theme}&max=${100}`)
+      .then((response) => response.json())
+      .then((data) => {
+        let myWords = data.map((word) => word.word);
+        myWords = wordlistFormatter(myWords, {
+          minLength,
+          numOfWords: maxWords,
+        });
+        console.log(myWords);
+        setWordList(myWords);
+        toggleModal();
+        setLoading(false);
+      })
+      .catch((error) => console.error(error));
+  };
+
+  const toggleModal = () => {
+    setModal(!modal);
+  };
+
   const fillWithRandom = (myGrid) => {
     //create a new copy of grid
     let tempGrid = copyGrid(myGrid);
@@ -96,6 +129,15 @@ function Grid() {
     }
 
     return tempGrid;
+  };
+
+  const wordlistFormatter = (wordlist, { minLength = 0, numOfWords = 10 }) => {
+    debugger;
+    let result = wordlist.filter(
+      (word) => word.split(" ").length === 1 && word.length > minLength
+    );
+    result = result.map((word) => word.toUpperCase());
+    return result.slice(0, numOfWords);
   };
 
   const putWordsInGrid = () => {
@@ -117,7 +159,6 @@ function Grid() {
             `Too many attempts. ${word} input failed after ${attempts} tries`
           );
           throw `Too many attempts. ${word} input failed after ${attempts} tries`;
-          break;
         } else if (result) {
           myGrid = result;
           break;
@@ -133,7 +174,7 @@ function Grid() {
 
   const putWordInGrid = (myGrid, word, debug = false) => {
     let directions = [...DIRECTIONS];
-    let { x, y } = generateRandomPos();
+    let { x, y } = generateRandomPos(myGrid, word);
     let tempDirection = generateRandomDirection(directions);
     let tempGrid = myGrid;
     if (debug) {
@@ -304,20 +345,21 @@ function Grid() {
     }
   };
 
-  const generateRandomPos = () => {
-    let x, y;
-    let attempts = 0;
-    do {
-      x = generateRandomNum(COLUMNS);
-      y = generateRandomNum(ROWS);
-      attempts++;
-    } while (grid[x][y] !== 0 && attempts <= ROWS * COLUMNS);
+  const generateRandomPos = (myGrid, word) => {
+    let choices = [];
+    let position = {};
 
-    if (attempts >= ROWS * COLUMNS) {
-      console.log(`${attempts} attempts made. Unable to find position`);
-      throw `${attempts} attempts made. Unable to find position`;
+    //create list of possible choices good candidate for useMemo();
+    for (let y = 0; y < COLUMNS; y++) {
+      for (let x = 0; x < ROWS; x++) {
+        if (myGrid[y][x] === 0 || myGrid[y][x] === word[0]) {
+          choices.push({ x, y });
+        }
+      }
     }
-    return { x, y };
+
+    position = { ...choices[generateRandomNum(choices.length)] };
+    return { ...position };
   };
 
   const generateRandomDirection = (directions) => {
@@ -349,7 +391,7 @@ function Grid() {
       return;
     }
     return (
-      <Container>
+      <Container className="wordsearch__container">
         {grid.map((col) => (
           <Row>
             {col.map((letter) => (
@@ -361,13 +403,52 @@ function Grid() {
     );
   };
 
+  if (loading) {
+    return <div>Loading</div>;
+  }
+
   return (
     <div>
       <Button onClick={generateCrosswordClicked}>GENERATE CROSSWORD</Button>
       <Button onClick={resetCrosswordClicked}>RESET</Button>
+      <Button onClick={toggleModal}>Set Theme For Words</Button>
       {createWordSearchGrid()}
       <div>wordList</div>
       {createWordList()}
+      <div>
+        Words supplied by Datamuse{" "}
+        <a href="https://www.datamuse.com/api/">
+          https://www.datamuse.com/api/
+        </a>
+      </div>
+      <Modal isOpen={modal} toggle={toggleModal}>
+        <ModalHeader toggle={toggleModal}>Set your word theme</ModalHeader>
+        <Form onSubmit={(e) => formSubmit(e)}>
+          <ModalBody>
+            <FormGroup>
+              <Label for="word-theme">Word Theme</Label>
+              <Input
+                type="text"
+                name="theme"
+                id="word-theme"
+                placeholder="Insert Theme"
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="num_of_words">Max Number of Words</Label>
+              <Input type="number" name="maxWords" id="num_of_words" />
+            </FormGroup>
+            <FormGroup>
+              <Label for="length_of_words">Minimum Word Length</Label>
+              <Input type="number" name="minLength" id="length_of_words" />
+            </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button>Submit</Button>
+            <Button onClick={toggleModal}>Cancel</Button>
+          </ModalFooter>
+        </Form>
+      </Modal>
     </div>
   );
 }

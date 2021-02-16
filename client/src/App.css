@@ -12,3 +12,13 @@ body {
 *::after {
   box-sizing: inherit;
 }
+
+.wordsearch__container {
+  height: 75vh;
+  width: 75vh;
+  max-width: 750px;
+  max-height: 750px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
