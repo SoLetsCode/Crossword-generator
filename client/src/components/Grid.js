@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { Button, Col } from "reactstrap";
+import { Button, Container, Col, Row } from "reactstrap";
 
 const defaultWordList = [
   "pigeon",
@@ -13,6 +13,8 @@ const defaultWordList = [
   "translate",
   "organize",
   "printer",
+  "impossible",
+  "mission",
 ];
 
 const alphabet = [
@@ -54,6 +56,7 @@ function Grid() {
     defaultWordList.map((word) => word.toUpperCase())
   );
   const [grid, setGrid] = useState(null);
+  const [solutionGrid, setSolutionGrid] = useState([[]]);
 
   useEffect(() => {
     generateGrid();
@@ -70,8 +73,8 @@ function Grid() {
     setGrid(tempGrid);
   };
 
-  const generateCrosswordClicked = async () => {
-    await putWordsInGrid();
+  const generateCrosswordClicked = () => {
+    putWordsInGrid();
     // await fillWithRandom();
   };
 
@@ -79,9 +82,9 @@ function Grid() {
     generateGrid();
   };
 
-  const fillWithRandom = async () => {
+  const fillWithRandom = (myGrid) => {
     //create a new copy of grid
-    let tempGrid = copyGrid(grid);
+    let tempGrid = copyGrid(myGrid);
 
     //run through tempGrid and change blank values
     for (let x = 0; x < COLUMNS; x++) {
@@ -92,36 +95,67 @@ function Grid() {
       }
     }
 
-    setGrid(tempGrid);
-
-    return;
+    return tempGrid;
   };
 
-  const putWordsInGrid = async () => {
+  const putWordsInGrid = () => {
     if (grid === null) {
       console.log("WAIT");
       return;
     }
-
+    let myGrid = copyGrid(grid);
     let tempWordList = [...wordList];
-    putWordInGrid(tempWordList[0]);
+
+    for (let word of tempWordList) {
+      let attempts = 0;
+      while (true) {
+        attempts++;
+        let result = putWordInGrid(myGrid, word);
+
+        if (attempts > COLUMNS * ROWS) {
+          console.log(
+            `Too many attempts. ${word} input failed after ${attempts} tries`
+          );
+          throw `Too many attempts. ${word} input failed after ${attempts} tries`;
+          break;
+        } else if (result) {
+          myGrid = result;
+          break;
+        }
+      }
+    }
+    setSolutionGrid(myGrid);
+    console.table(myGrid);
+    myGrid = fillWithRandom(myGrid);
+    console.table(myGrid);
+    setGrid(myGrid);
   };
 
-  const putWordInGrid = (word) => {
+  const putWordInGrid = (myGrid, word, debug = false) => {
     let directions = [...DIRECTIONS];
     let { x, y } = generateRandomPos();
     let tempDirection = generateRandomDirection(directions);
-    let tempGrid = copyGrid(grid);
-    console.log(`x is ${x}`);
-    console.log(`y is ${y}`);
-    console.log(tempDirection);
-    setGrid(tempGrid);
-    console.log(checkIfWordFits(tempGrid, tempDirection, wordList[0], x, y));
-    if (checkIfWordFits(tempGrid, tempDirection, wordList[0], x, y)) {
-      checkIfWordFits(tempGrid, tempDirection, wordList[0], x, y, true);
+    let tempGrid = myGrid;
+    if (debug) {
+      console.log(`x is ${x}`);
+      console.log(`y is ${y}`);
+      console.log(`direction is ${tempDirection}`);
+      console.log(
+        `${word} fits ? ${checkIfWordFits(
+          tempGrid,
+          tempDirection,
+          wordList[0],
+          x,
+          y
+        )}`
+      );
     }
-
-    setGrid(tempGrid);
+    if (checkIfWordFits(tempGrid, tempDirection, word, x, y)) {
+      return copyGrid(
+        checkIfWordFits(tempGrid, tempDirection, word, x, y, true)
+      );
+    }
+    return false;
   };
 
   const checkIfWordFits = (tempGrid, direction, word, x, y, write = false) => {
@@ -266,8 +300,7 @@ function Grid() {
     if (!write) {
       return result;
     } else {
-      console.table(myGrid);
-      return myGrid;
+      return copyGrid(myGrid);
     }
   };
 
@@ -315,13 +348,17 @@ function Grid() {
     if (grid === null) {
       return;
     }
-    return grid.map((col) => (
-      <div className="d-flex">
-        {col.map((letter) => (
-          <Col>{letter}</Col>
+    return (
+      <Container>
+        {grid.map((col) => (
+          <Row>
+            {col.map((letter) => (
+              <Col>{letter}</Col>
+            ))}
+          </Row>
         ))}
-      </div>
-    ));
+      </Container>
+    );
   };
 
   return (
