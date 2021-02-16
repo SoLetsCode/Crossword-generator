@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { Button, Container, Col, Row } from "reactstrap";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { Input, Form, FormGroup, Label, FormText } from "reactstrap";
+import { Input, Form, FormGroup, Label } from "reactstrap";
 
 const defaultWordList = [
   "pigeon",
@@ -64,6 +64,11 @@ function Grid() {
   const [modal, setModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  //for Form
+  const [theme, setTheme] = useState("");
+  const [maxWords, setMaxWords] = useState(10);
+  const [minLength, setMinLength] = useState(5);
+
   useEffect(() => {
     generateGrid();
   }, []);
@@ -77,11 +82,11 @@ function Grid() {
       }
     }
     setGrid(tempGrid);
+    return tempGrid;
   };
 
   const generateCrosswordClicked = () => {
     putWordsInGrid();
-    // await fillWithRandom();
   };
 
   const resetCrosswordClicked = () => {
@@ -95,7 +100,7 @@ function Grid() {
     let minLength = parseInt(e.target.minLength.value);
     setLoading(!loading);
 
-    fetch(`${API_PATH}?ml=${theme}&max=${100}`)
+    fetch(`${API_PATH}?ml=${theme}&max=${1000}`)
       .then((response) => response.json())
       .then((data) => {
         let myWords = data.map((word) => word.word);
@@ -132,21 +137,38 @@ function Grid() {
   };
 
   const wordlistFormatter = (wordlist, { minLength = 0, numOfWords = 10 }) => {
-    debugger;
+    let finalWordList = [];
     let result = wordlist.filter(
-      (word) => word.split(" ").length === 1 && word.length > minLength
+      (word) =>
+        word.split(" ").length === 1 &&
+        word.length > minLength &&
+        word.length < ROWS &&
+        word.length < COLUMNS
     );
-    result = result.map((word) => word.toUpperCase());
-    return result.slice(0, numOfWords);
+
+    for (
+      let count = 0;
+      count < numOfWords && result.length > numOfWords;
+      count++
+    ) {
+      let index = generateRandomNum(result.length);
+      finalWordList.push(result[index]);
+      result = result.slice(0, index).concat(result.slice(index + 1));
+    }
+
+    finalWordList = finalWordList.map((word) => word.toUpperCase());
+
+    return finalWordList;
   };
 
-  const putWordsInGrid = () => {
+  const putWordsInGrid = (count = 0) => {
     if (grid === null) {
       console.log("WAIT");
       return;
     }
-    let myGrid = copyGrid(grid);
+    let myGrid = generateGrid();
     let tempWordList = [...wordList];
+    console.log("running");
 
     for (let word of tempWordList) {
       let attempts = 0;
@@ -383,7 +405,7 @@ function Grid() {
 
   //react component creators
   const createWordList = () => {
-    return wordList.map((word) => <div>{word}</div>);
+    return wordList.map((word) => <div className="text-center">{word}</div>);
   };
 
   const createWordSearchGrid = () => {
@@ -409,11 +431,12 @@ function Grid() {
 
   return (
     <div>
-      <Button onClick={generateCrosswordClicked}>GENERATE CROSSWORD</Button>
-      <Button onClick={resetCrosswordClicked}>RESET</Button>
-      <Button onClick={toggleModal}>Set Theme For Words</Button>
+      <Container className="d-flex justify-content-center">
+        <Button onClick={generateCrosswordClicked}>GENERATE CROSSWORD</Button>
+        <Button onClick={toggleModal}>Set Theme For Words</Button>
+      </Container>
       {createWordSearchGrid()}
-      <div>wordList</div>
+      <div className="text-center">==========WORDLIST==========</div>
       {createWordList()}
       <div>
         Words supplied by Datamuse{" "}
