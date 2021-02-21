@@ -86,7 +86,7 @@ function Grid() {
   };
 
   const generateCrosswordClicked = () => {
-    putWordsInGrid();
+    putWordsInGrid(wordList);
   };
 
   const resetCrosswordClicked = () => {
@@ -114,14 +114,14 @@ function Grid() {
         });
         console.log(myWords);
         setWordList(myWords);
+        putWordsInGrid(myWords);
         toggleModal();
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
         console.error(error);
-      })
-      .finally(putWordsInGrid());
+      });
   };
 
   const toggleModal = () => {
@@ -169,7 +169,7 @@ function Grid() {
     return finalWordList;
   };
 
-  const putWordsInGrid = (count = 0) => {
+  const putWordsInGrid = (wordList, count = 0) => {
     if (grid === null) {
       console.log("WAIT");
       return;
@@ -195,7 +195,7 @@ function Grid() {
           console.log(
             `Too many attempts. ${word} input failed after ${attempts} tries`
           );
-          putWordsInGrid(count + 1);
+          putWordsInGrid(wordList, count + 1);
           throw `Too many attempts. ${word} input failed after ${attempts} tries`;
         } else if (result) {
           myGrid = result;
