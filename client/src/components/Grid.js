@@ -448,7 +448,12 @@ function Grid() {
   return (
     <div>
       <Container className="d-flex justify-content-center">
-        <Button onClick={generateCrosswordClicked}>GENERATE CROSSWORD</Button>
+        <Button
+          onClick={generateCrosswordClicked}
+          title={"mixes up the crossword again"}
+        >
+          RE-GENERATE CROSSWORD
+        </Button>
         <Button onClick={toggleModal}>Set Theme For Words</Button>
       </Container>
       <Container>
