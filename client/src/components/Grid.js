@@ -53,7 +53,7 @@ const DIRECTIONS = ["N", "E", "S", "W", "NE", "NW", "SE", "SW"];
 const ROWS = 15;
 const COLUMNS = 15;
 
-const API_PATH = "http://api.datamuse.com/words";
+const API_PATH = "https://api.datamuse.com/words";
 
 function Grid() {
   const [wordList, setWordList] = useState(
@@ -115,13 +115,13 @@ function Grid() {
         console.log(myWords);
         setWordList(myWords);
         toggleModal();
-        putWordsInGrid();
         setLoading(false);
       })
       .catch((error) => {
         setLoading(false);
         console.error(error);
-      });
+      })
+      .finally(putWordsInGrid());
   };
 
   const toggleModal = () => {
