@@ -66,7 +66,7 @@ function Grid() {
 
   //for Form
   const [theme, setTheme] = useState("");
-  const [maxWords, setMaxWords] = useState(10);
+  const [maxWords, setMaxWords] = useState(15);
   const [minLength, setMinLength] = useState(5);
 
   useEffect(() => {
@@ -100,6 +100,10 @@ function Grid() {
     let minLength = parseInt(e.target.minLength.value);
     setLoading(!loading);
 
+    setTheme(theme);
+    setMaxWords(maxWords);
+    setMinLength(minLength);
+
     fetch(`${API_PATH}?ml=${theme}&max=${1000}`)
       .then((response) => response.json())
       .then((data) => {
@@ -111,9 +115,13 @@ function Grid() {
         console.log(myWords);
         setWordList(myWords);
         toggleModal();
+        putWordsInGrid();
         setLoading(false);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        setLoading(false);
+        console.error(error);
+      });
   };
 
   const toggleModal = () => {
@@ -168,7 +176,14 @@ function Grid() {
     }
     let myGrid = generateGrid();
     let tempWordList = [...wordList];
-    console.log("running");
+    console.log(`running ${count} times`);
+
+    if (count > 100) {
+      alert(
+        `after ${count} tries unable to find a working crossword puzzle, please try with a different set of words`
+      );
+      return;
+    }
 
     for (let word of tempWordList) {
       let attempts = 0;
@@ -180,6 +195,7 @@ function Grid() {
           console.log(
             `Too many attempts. ${word} input failed after ${attempts} tries`
           );
+          putWordsInGrid(count + 1);
           throw `Too many attempts. ${word} input failed after ${attempts} tries`;
         } else if (result) {
           myGrid = result;
@@ -435,6 +451,9 @@ function Grid() {
         <Button onClick={generateCrosswordClicked}>GENERATE CROSSWORD</Button>
         <Button onClick={toggleModal}>Set Theme For Words</Button>
       </Container>
+      <Container>
+        <Col className="text-center">{theme.toUpperCase()}</Col>
+      </Container>
       {createWordSearchGrid()}
       <div className="text-center">==========WORDLIST==========</div>
       {createWordList()}
@@ -455,15 +474,26 @@ function Grid() {
                 name="theme"
                 id="word-theme"
                 placeholder="Insert Theme"
+                defaultValue={theme}
               />
             </FormGroup>
             <FormGroup>
               <Label for="num_of_words">Max Number of Words</Label>
-              <Input type="number" name="maxWords" id="num_of_words" />
+              <Input
+                type="number"
+                name="maxWords"
+                id="num_of_words"
+                defaultValue={maxWords}
+              />
             </FormGroup>
             <FormGroup>
               <Label for="length_of_words">Minimum Word Length</Label>
-              <Input type="number" name="minLength" id="length_of_words" />
+              <Input
+                type="number"
+                name="minLength"
+                id="length_of_words"
+                defaultValue={minLength}
+              />
             </FormGroup>
           </ModalBody>
           <ModalFooter>
