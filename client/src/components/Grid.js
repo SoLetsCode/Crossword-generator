@@ -421,7 +421,12 @@ function Grid() {
 
   //react component creators
   const createWordList = () => {
-    return wordList.map((word) => <div className="text-center">{word}</div>);
+    let myWordList = wordList.map((word) => (
+      <Col xs={3} className="text-center">
+        {word}
+      </Col>
+    ));
+    return <Row>{myWordList}</Row>;
   };
 
   const createWordSearchGrid = () => {
