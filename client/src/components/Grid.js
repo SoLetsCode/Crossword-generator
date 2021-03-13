@@ -473,7 +473,7 @@ function Grid() {
           <a href="https://www.datamuse.com/api/">
             https://www.datamuse.com/api/
           </a>
-          V.0.010
+          V.0.015
         </div>
       </Container>
       <Modal isOpen={modal} toggle={toggleModal}>

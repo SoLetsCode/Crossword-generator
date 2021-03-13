@@ -11,3 +11,19 @@ jobs:
     - uses: actions/setup-node@v1
     - run: npm install -g bats
     - run: bats -v
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+      - uses: actions/checkout@v2
+      - name: Set-up Node 
+        uses: actions/setup-node@v1
+      - run: npm install
+      - run: npm run build 
+      - name: Deploy 
+        uses: crazy-max/ghaction-github-pages@v2
+        with:
+          target_branch: gh-pages 
+          build_dir: build
+        env:
+          GITHUB_TOKEN: ${{secrets.GH_PAGES_TOKEN}}
