@@ -1,0 +1,11 @@
+name: github-actions-deploy-on-push
+on:
+  push:
+    branches: -main
+jobs:
+  check-bats-version:
+  steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+    - run: npm install -g bats
+    - run: bats -v
