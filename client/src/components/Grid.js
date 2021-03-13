@@ -464,15 +464,18 @@ function Grid() {
       <Container>
         <Col className="text-center">{theme.toUpperCase()}</Col>
       </Container>
-      {createWordSearchGrid()}
-      <div className="text-center">==========WORDLIST==========</div>
-      {createWordList()}
-      <div>
-        Words supplied by Datamuse{" "}
-        <a href="https://www.datamuse.com/api/">
-          https://www.datamuse.com/api/
-        </a>
-      </div>
+      <Container>{createWordSearchGrid()}</Container>
+      <Container className="mt-5">
+        <div className="text-center">==========WORDLIST==========</div>
+        {createWordList()}
+        <div>
+          Words supplied by Datamuse{" "}
+          <a href="https://www.datamuse.com/api/">
+            https://www.datamuse.com/api/
+          </a>
+          V.0.010
+        </div>
+      </Container>
       <Modal isOpen={modal} toggle={toggleModal}>
         <ModalHeader toggle={toggleModal}>Set your word theme</ModalHeader>
         <Form onSubmit={(e) => formSubmit(e)}>
