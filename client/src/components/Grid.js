@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
+import * as constants from "../constants";
 
 import { Button, Container, Col, Row } from "reactstrap";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { Input, Form, FormGroup, Label } from "reactstrap";
+
+import {
+  copyGrid,
+  fillWithRandom,
+  generateGrid,
+  generateRandomDirection,
+  generateRandomNum,
+} from "./helpers/gridModule";
 
 const defaultWordList = [
   "pigeon",
@@ -19,42 +29,6 @@ const defaultWordList = [
   "mission",
 ];
 
-const alphabet = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "W",
-  "X",
-  "Y",
-  "Z",
-];
-
-const DIRECTIONS = ["N", "E", "S", "W", "NE", "NW", "SE", "SW"];
-
-const ROWS = 15;
-const COLUMNS = 15;
-
-const API_PATH = "https://api.datamuse.com/words";
-
 function Grid() {
   const [wordList, setWordList] = useState(
     defaultWordList.map((word) => word.toUpperCase())
@@ -70,20 +44,8 @@ function Grid() {
   const [minLength, setMinLength] = useState(5);
 
   useEffect(() => {
-    generateGrid();
+    setGrid(generateGrid());
   }, []);
-
-  const generateGrid = () => {
-    let tempGrid = [];
-    for (let x = 0; x < COLUMNS; x++) {
-      tempGrid.push([]);
-      for (let y = 0; y < ROWS; y++) {
-        tempGrid[x][y] = 0;
-      }
-    }
-    setGrid(tempGrid);
-    return tempGrid;
-  };
 
   const generateCrosswordClicked = () => {
     putWordsInGrid(wordList);
@@ -104,7 +66,7 @@ function Grid() {
     setMaxWords(maxWords);
     setMinLength(minLength);
 
-    fetch(`${API_PATH}?ml=${theme}&max=${1000}`)
+    fetch(`${constants.API_PATH}?ml=${theme}&max=${1000}`)
       .then((response) => response.json())
       .then((data) => {
         let myWords = data.map((word) => word.word);
@@ -128,30 +90,14 @@ function Grid() {
     setModal(!modal);
   };
 
-  const fillWithRandom = (myGrid) => {
-    //create a new copy of grid
-    let tempGrid = copyGrid(myGrid);
-
-    //run through tempGrid and change blank values
-    for (let x = 0; x < COLUMNS; x++) {
-      for (let y = 0; y < ROWS; y++) {
-        if (tempGrid[x][y] === 0) {
-          tempGrid[x][y] = alphabet[generateRandomNum(alphabet.length)];
-        }
-      }
-    }
-
-    return tempGrid;
-  };
-
   const wordlistFormatter = (wordlist, { minLength = 0, numOfWords = 10 }) => {
     let finalWordList = [];
     let result = wordlist.filter(
       (word) =>
         word.split(" ").length === 1 &&
         word.length > minLength &&
-        word.length < ROWS &&
-        word.length < COLUMNS
+        word.length < constants.ROWS &&
+        word.length < constants.COLUMNS
     );
 
     for (
@@ -191,7 +137,7 @@ function Grid() {
         attempts++;
         let result = putWordInGrid(myGrid, word);
 
-        if (attempts > COLUMNS * ROWS) {
+        if (attempts > constants.COLUMNS * constants.ROWS) {
           console.log(
             `Too many attempts. ${word} input failed after ${attempts} tries`
           );
@@ -211,7 +157,7 @@ function Grid() {
   };
 
   const putWordInGrid = (myGrid, word, debug = false) => {
-    let directions = [...DIRECTIONS];
+    let directions = [...constants.DIRECTIONS];
     let { x, y } = generateRandomPos(myGrid, word);
     let tempDirection = generateRandomDirection(directions);
     let tempGrid = myGrid;
@@ -261,7 +207,7 @@ function Grid() {
         }
         break;
       case "E":
-        if (x + word.length >= COLUMNS) {
+        if (x + word.length >= constants.COLUMNS) {
           return false;
         }
         for (let count = 0; count < word.length; count++) {
@@ -277,7 +223,7 @@ function Grid() {
         }
         break;
       case "S":
-        if (y + word.length >= ROWS) {
+        if (y + word.length >= constants.ROWS) {
           return false;
         }
         for (let count = 0; count < word.length; count++) {
@@ -310,7 +256,7 @@ function Grid() {
         }
         break;
       case "NE":
-        if (y - word.length < 0 || x + word.length >= COLUMNS) {
+        if (y - word.length < 0 || x + word.length >= constants.COLUMNS) {
           return false;
         }
         for (let count = 0; count < word.length; count++) {
@@ -342,7 +288,10 @@ function Grid() {
         }
         break;
       case "SE":
-        if (y + word.length >= ROWS || x + word.length >= COLUMNS) {
+        if (
+          y + word.length >= constants.ROWS ||
+          x + word.length >= constants.COLUMNS
+        ) {
           return false;
         }
         for (let count = 0; count < word.length; count++) {
@@ -358,7 +307,7 @@ function Grid() {
         }
         break;
       case "SW":
-        if (y + word.length >= ROWS || x - word.length < 0) {
+        if (y + word.length >= constants.ROWS || x - word.length < 0) {
           return false;
         }
         for (let count = 0; count < word.length; count++) {
@@ -388,8 +337,8 @@ function Grid() {
     let position = {};
 
     //create list of possible choices good candidate for useMemo();
-    for (let y = 0; y < COLUMNS; y++) {
-      for (let x = 0; x < ROWS; x++) {
+    for (let y = 0; y < constants.COLUMNS; y++) {
+      for (let x = 0; x < constants.ROWS; x++) {
         if (myGrid[y][x] === 0 || myGrid[y][x] === word[0]) {
           choices.push({ x, y });
         }
@@ -400,29 +349,10 @@ function Grid() {
     return { ...position };
   };
 
-  const generateRandomDirection = (directions) => {
-    return DIRECTIONS[generateRandomNum(DIRECTIONS.length)];
-  };
-
-  const generateRandomNum = (range = 0) => {
-    if (!Number.isInteger(range)) {
-      throw "range must be a number";
-    }
-    return Math.floor(Math.random() * range);
-  };
-
-  const copyGrid = (grid) => {
-    let tempGrid = [];
-    for (let col = 0; col < COLUMNS; col++) {
-      tempGrid.push([...grid[col]]);
-    }
-    return tempGrid;
-  };
-
   //react component creators
   const createWordList = () => {
     let myWordList = wordList.map((word) => (
-      <Col xs={3} className="text-center">
+      <Col xs={3} className="text-center" key={uuidv4()}>
         {word}
       </Col>
     ));
@@ -436,9 +366,9 @@ function Grid() {
     return (
       <Container className="wordsearch__container">
         {grid.map((col) => (
-          <Row>
+          <Row key={uuidv4()}>
             {col.map((letter) => (
-              <Col>{letter}</Col>
+              <Col key={uuidv4()}>{letter}</Col>
             ))}
           </Row>
         ))}
