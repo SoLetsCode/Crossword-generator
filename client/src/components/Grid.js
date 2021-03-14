@@ -44,7 +44,7 @@ function Grid() {
   const [minLength, setMinLength] = useState(5);
 
   useEffect(() => {
-    setGrid(generateGrid());
+    setGrid(generateGrid(constants.ROWS, constants.COLUMNS));
   }, []);
 
   const generateCrosswordClicked = () => {
@@ -52,7 +52,7 @@ function Grid() {
   };
 
   const resetCrosswordClicked = () => {
-    generateGrid();
+    generateGrid(constants.ROWS, constants.COLUMNS);
   };
 
   const formSubmit = async (e) => {

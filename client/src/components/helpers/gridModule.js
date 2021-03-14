@@ -2,7 +2,7 @@ import * as constants from "../../constants";
 
 const copyGrid = (grid) => {
   let tempGrid = [];
-  for (let col = 0; col < constants.COLUMNS; col++) {
+  for (let col = 0; col < grid.length; col++) {
     tempGrid.push([...grid[col]]);
   }
   return tempGrid;
@@ -25,11 +25,11 @@ const fillWithRandom = (myGrid) => {
   return tempGrid;
 };
 
-const generateGrid = () => {
+const generateGrid = (rows, columns) => {
   let tempGrid = [];
-  for (let x = 0; x < constants.COLUMNS; x++) {
+  for (let x = 0; x < rows; x++) {
     tempGrid.push([]);
-    for (let y = 0; y < constants.ROWS; y++) {
+    for (let y = 0; y < columns; y++) {
       tempGrid[x][y] = 0;
     }
   }
