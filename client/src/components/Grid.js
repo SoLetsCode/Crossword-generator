@@ -157,9 +157,8 @@ function Grid() {
   };
 
   const putWordInGrid = (myGrid, word, debug = false) => {
-    let directions = [...constants.DIRECTIONS];
     let { x, y } = generateRandomPos(myGrid, word);
-    let tempDirection = generateRandomDirection(directions);
+    let tempDirection = generateRandomDirection(constants.DIRECTIONS);
     let tempGrid = myGrid;
     if (debug) {
       console.log(`x is ${x}`);

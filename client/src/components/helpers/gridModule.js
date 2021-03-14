@@ -13,10 +13,10 @@ const fillWithRandom = (myGrid) => {
   let tempGrid = copyGrid(myGrid);
 
   //run through tempGrid and change blank values
-  for (let x = 0; x < constants.COLUMNS; x++) {
-    for (let y = 0; y < constants.ROWS; y++) {
-      if (tempGrid[x][y] === 0) {
-        tempGrid[x][y] =
+  for (let y = 0; y < myGrid.length; y++) {
+    for (let x = 0; x < myGrid[0].length; x++) {
+      if (tempGrid[y][x] === 0) {
+        tempGrid[y][x] =
           constants.ALPHABET[generateRandomNum(constants.ALPHABET.length)];
       }
     }
@@ -37,7 +37,7 @@ const generateGrid = (rows, columns) => {
 };
 
 const generateRandomDirection = (directions) => {
-  return constants.DIRECTIONS[generateRandomNum(constants.DIRECTIONS.length)];
+  return directions[generateRandomNum(directions.length)];
 };
 
 const generateRandomNum = (range = 0) => {

@@ -4,13 +4,6 @@ on:
     branches: 
       - main
 jobs:
-  check-bats-version:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-    - run: npm install -g bats
-    - run: bats -v
   build-test-deploy:
     runs-on: ubuntu-latest
     defaults:
