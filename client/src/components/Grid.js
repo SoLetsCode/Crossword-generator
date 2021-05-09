@@ -48,6 +48,7 @@ function Grid() {
   }, []);
 
   const generateCrosswordClicked = () => {
+    debugger;
     putWordsInGrid(wordList);
   };
 
@@ -120,7 +121,7 @@ function Grid() {
       console.log("WAIT");
       return;
     }
-    let myGrid = generateGrid();
+    let myGrid = generateGrid(constants.ROWS, constants.COLUMNS);
     let tempWordList = [...wordList];
     console.log(`running ${count} times`);
 
