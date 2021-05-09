@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/wordsearch-generator/static/css/main.c89a959a.chunk.css",
+    "main.js": "/wordsearch-generator/static/js/main.9e3ae87a.chunk.js",
+    "main.js.map": "/wordsearch-generator/static/js/main.9e3ae87a.chunk.js.map",
+    "runtime-main.js": "/wordsearch-generator/static/js/runtime-main.3d33b573.js",
+    "runtime-main.js.map": "/wordsearch-generator/static/js/runtime-main.3d33b573.js.map",
+    "static/css/2.4c97ca4f.chunk.css": "/wordsearch-generator/static/css/2.4c97ca4f.chunk.css",
+    "static/js/2.84de78bc.chunk.js": "/wordsearch-generator/static/js/2.84de78bc.chunk.js",
+    "static/js/2.84de78bc.chunk.js.map": "/wordsearch-generator/static/js/2.84de78bc.chunk.js.map",
+    "static/js/3.5e7ff6d7.chunk.js": "/wordsearch-generator/static/js/3.5e7ff6d7.chunk.js",
+    "static/js/3.5e7ff6d7.chunk.js.map": "/wordsearch-generator/static/js/3.5e7ff6d7.chunk.js.map",
+    "index.html": "/wordsearch-generator/index.html",
+    "static/css/2.4c97ca4f.chunk.css.map": "/wordsearch-generator/static/css/2.4c97ca4f.chunk.css.map",
+    "static/css/main.c89a959a.chunk.css.map": "/wordsearch-generator/static/css/main.c89a959a.chunk.css.map",
+    "static/js/2.84de78bc.chunk.js.LICENSE.txt": "/wordsearch-generator/static/js/2.84de78bc.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3d33b573.js",
+    "static/css/2.4c97ca4f.chunk.css",
+    "static/js/2.84de78bc.chunk.js",
+    "static/css/main.c89a959a.chunk.css",
+    "static/js/main.9e3ae87a.chunk.js"
+  ]
+}
